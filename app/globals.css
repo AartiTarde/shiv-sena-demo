@@ -6,10 +6,13 @@
   --background: #FFF8F0;
   --foreground: #2C3E50;
   --carrot-orange: #E67E22;
+  --ward-orange: #E67E22; /* Same as carrot for consistency */
   --burnt-orange: #D35400;
   --header-bg: #FFECD6;
   --selected-bg: #FFE5CC;
   --border-color: #E0E0E0;
+  --whatsapp-green: #25D366;
+  --whatsapp-green-hover: #128C7E;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,7 +45,7 @@ body {
   /* Custom Scrollbar Styles */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #E67E22 #FFF8F0;
+    scrollbar-color: var(--carrot-orange) var(--background);
   }
   
   .scrollbar-thin::-webkit-scrollbar {
@@ -51,18 +54,272 @@ body {
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: #FFF8F0;
+    background: var(--background);
     border-radius: 4px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #E67E22;
+    background: var(--carrot-orange);
     border-radius: 4px;
-    border: 2px solid #FFF8F0;
+    border: 2px solid var(--background);
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #D35400;
+    background: var(--burnt-orange);
+  }
+
+  /* Horizontal Scrollbar for Mobile */
+  @media (max-width: 768px) {
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: var(--carrot-orange);
+      border-radius: 3px;
+      border: none;
+    }
+  }
+  
+  /* Image Error Handling */
+  .img-error {
+    display: none !important;
+  }
+  
+  /* WhatsApp Colors */
+  .whatsapp-bg {
+    background-color: var(--whatsapp-green);
+  }
+  
+  .whatsapp-bg:hover {
+    background-color: var(--whatsapp-green-hover);
+  }
+  
+  .whatsapp-ring {
+    --tw-ring-color: rgba(37, 211, 102, 0.3);
+  }
+  
+  /* Ward Background - Consistent Carrot Color */
+  .ward-bg {
+    background-color: var(--carrot-orange);
+  }
+  
+  /* Responsive Heights for Voter Cards */
+  .voter-card-header-height {
+    height: 2.5rem; /* 40px */
+  }
+  
+  @media (min-width: 640px) {
+    .voter-card-header-height {
+      height: 3rem; /* 48px */
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .voter-card-header-height {
+      height: 3.5rem; /* 56px */
+    }
+  }
+  
+  /* Responsive Input Heights */
+  .input-height {
+    min-height: 38px;
+  }
+  
+  @media (min-width: 640px) {
+    .input-height {
+      min-height: 40px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .input-height {
+      min-height: 44px;
+    }
+  }
+  
+  /* Standard Input Styles */
+  .input-base {
+    @apply px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-2 border border-border-light rounded-lg bg-white text-slate-900 text-xs md:text-sm focus:ring-2 focus:ring-carrot focus:border-carrot outline-none transition-colors;
+  }
+  
+  /* Standard Button Styles */
+  .btn-primary {
+    @apply bg-carrot hover:bg-burnt text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-colors whitespace-nowrap flex-shrink-0;
+  }
+  
+  .btn-secondary {
+    @apply bg-white border border-border-light rounded-lg hover:bg-peach-50 transition-colors shadow-sm;
+  }
+  
+  /* Responsive Scrollable Container - Takes available space with scrollbar */
+  .scrollable-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0; /* Important for flex children to allow scrolling */
+  }
+  
+  /* Page Layout Container - Full height flex container */
+  .page-container {
+    @apply flex flex-col h-screen overflow-hidden;
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  /* Mobile: Fixed header container - stays at top */
+  .mobile-fixed-header {
+    @apply flex-shrink-0 z-20;
+    width: 100%;
+  }
+  
+  /* Mobile: Fixed pagination footer - stays at bottom */
+  .mobile-fixed-footer {
+    @apply bg-peach-50 border-t border-border-light flex-shrink-0 z-20;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
+  }
+  
+  /* Pagination Container */
+  .pagination-container {
+    @apply py-2 sm:py-3 md:py-4;
+  }
+  
+  /* Content Area - Scrollable section */
+  .content-area {
+    @apply flex-1 overflow-y-auto overflow-x-hidden;
+  }
+  
+  /* Large Card Header Heights */
+  .large-card-header {
+    height: 2rem; /* 32px */
+  }
+  
+  @media (min-width: 640px) {
+    .large-card-header {
+      height: 2.25rem; /* 36px */
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .large-card-header {
+      height: 2.25rem; /* 36px */
+    }
+  }
+  
+  /* Dropdown Item Heights */
+  .dropdown-item-height {
+    min-height: 36px;
+  }
+  
+  @media (min-width: 640px) {
+    .dropdown-item-height {
+      min-height: 40px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .dropdown-item-height {
+      min-height: 44px;
+    }
+  }
+  
+  /* Dropdown Container Heights */
+  .dropdown-container {
+    max-height: 250px;
+  }
+  
+  @media (min-width: 640px) {
+    .dropdown-container {
+      max-height: 300px;
+    }
+  }
+  
+  /* Pagination Button Sizes */
+  .pagination-btn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  /* Nav Button Heights */
+  .nav-btn-height {
+    min-height: 32px;
+  }
+  
+  @media (min-width: 640px) {
+    .nav-btn-height {
+      min-height: 36px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .nav-btn-height {
+      min-height: 40px;
+    }
+  }
+  
+  /* Dropdown Button Base */
+  .dropdown-btn {
+    @apply w-full px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-2 border border-border-light rounded-lg bg-white text-slate-900 text-xs md:text-sm focus:ring-2 focus:ring-carrot focus:border-carrot outline-none flex items-center gap-1.5 sm:gap-2 sm:min-w-[160px] overflow-hidden;
+  }
+  
+  /* Pagination Button Base */
+  .pagination-btn-base {
+    @apply px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-colors;
+  }
+  
+  /* Pagination Nav Button */
+  .pagination-nav-btn {
+    @apply px-3 md:px-4 py-2 md:py-2.5 border border-border-light rounded-lg bg-white text-slate-900 text-xs md:text-sm font-medium hover:bg-peach-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+  
+  /* Input with Icon (for search inputs) */
+  .input-with-icon {
+    @apply pr-8 sm:pr-10;
+  }
+  
+  /* Polling Station Container Padding */
+  .polling-station-container {
+    @apply pr-8 sm:pr-10 md:pr-14;
+  }
+  
+  .polling-station-container-large {
+    @apply pr-10 sm:pr-12 md:pr-16;
+  }
+  
+  /* Polling Station Text Padding */
+  .polling-station-text {
+    @apply pr-2 sm:pr-3 md:pr-14;
+  }
+  
+  .polling-station-text-small {
+    @apply pr-1.5 sm:pr-2 md:pr-12;
+  }
+  
+  /* EPIC Box Padding (for large card) */
+  .epic-box-padding {
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  
+  /* Ward Box Padding */
+  .ward-box-padding {
+    @apply px-1 py-1;
+  }
+  
+  /* Small Spacing Utilities */
+  .spacing-tiny {
+    margin-top: 1px;
+  }
+  
+  .mb-zero {
+    margin-bottom: 0;
   }
 }
 

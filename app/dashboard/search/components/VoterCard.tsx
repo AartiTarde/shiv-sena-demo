@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { VoterData } from "../utils/data";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import { getTranslations } from "../../../utils/translations";
 
 type VoterCardProps = {
   person: VoterData;
@@ -27,7 +29,7 @@ const WhatsAppButton = ({ size = "md", className = "" }: { size?: "sm" | "md" | 
 
   return (
     <motion.button 
-      className={`${sizeClasses[size]} bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-10 focus:outline-none focus:ring-4 focus:ring-green-300 ${className}`}
+      className={`${sizeClasses[size]} whatsapp-bg rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-10 focus:outline-none focus:ring-4 whatsapp-ring ${className}`}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Share via WhatsApp"
@@ -40,6 +42,18 @@ const WhatsAppButton = ({ size = "md", className = "" }: { size?: "sm" | "md" | 
 };
 
 export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
+  const { language } = useLanguage();
+  const t = getTranslations(language);
+
+  // Translate gender value
+  const getTranslatedGender = (gender: string) => {
+    if (!gender) return "N/A";
+    const genderLower = gender.toLowerCase();
+    if (genderLower.includes("male") || genderLower.includes("m")) return t.male;
+    if (genderLower.includes("female") || genderLower.includes("f")) return t.female;
+    return t.other;
+  };
+
   if (isLarge) {
     return (
       <motion.div 
@@ -52,21 +66,24 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
         {/* Logo and EPIC Number Box */}
         <div className="flex items-center gap-2 sm:gap-2.5 mb-2 sm:mb-2.5 min-w-0">
           {/* Logo */}
-          <div className="flex-1 min-w-0 flex flex-col items-center justify-center h-10 sm:h-12 md:h-14">
+          <div className="flex-1 min-w-0 flex flex-col items-center justify-center voter-card-header-height">
             <img
               src="/poll.png"
               alt="Logo"
               className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain drop-shadow-sm"
+              onError={(e) => {
+                (e.target as HTMLImageElement).classList.add("img-error");
+              }}
             />
           </div>
-          <div className="flex-1 min-w-0 flex flex-col items-center justify-center h-8 sm:h-9 md:h-9 bg-orange-500 rounded-md px-1 py-1">
-            <p className="text-[7px] sm:text-[8px] text-white mb-0 font-semibold uppercase tracking-wide text-center leading-tight">Ward</p>
-            <p className="text-[8px] sm:text-[9px] font-bold text-white break-words text-center leading-tight">{person.wardNumber}</p>
+          <div className="flex-1 min-w-0 flex flex-col items-center justify-center large-card-header ward-bg rounded-md ward-box-padding">
+            <p className="text-[7px] sm:text-[8px] text-white mb-zero font-semibold uppercase tracking-wide text-center leading-tight">{t.ward}</p>
+            <p className="text-[8px] sm:text-[9px] font-bold text-white break-words text-center leading-tight">{person.wardNumber || "N/A"}</p>
           </div>
-          <div className="flex-1 min-w-0 flex flex-col items-center justify-center h-8 sm:h-9 md:h-9">
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-peach-100 to-peach-200 border border-carrot-200 rounded px-[3px] py-[2px] text-center shadow-sm">
-              <p className="text-[8px] sm:text-[9px] font-bold text-slate-900 break-all truncate leading-tight">{person.epicNo}</p>
-              <p className="text-[6px] sm:text-[7px] text-slate-600 font-medium mt-[1px] leading-tight">(EPIC NO)</p>
+          <div className="flex-1 min-w-0 flex flex-col items-center justify-center large-card-header">
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-peach-100 to-peach-200 border border-carrot-200 rounded epic-box-padding text-center shadow-sm">
+              <p className="text-[8px] sm:text-[9px] font-bold text-slate-900 break-all truncate leading-tight">{person.epicNo || "N/A"}</p>
+              <p className="text-[6px] sm:text-[7px] text-slate-600 font-medium spacing-tiny leading-tight">({t.epicNo})</p>
             </div>
           </div>
         </div>
@@ -79,31 +96,31 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
               {/* Left Column */}
               <div className="flex-1 min-w-0 space-y-2 sm:space-y-2.5">
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Serial No.</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.serialNo}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.serialNo}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.serialNo || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Age</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.age}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.age}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.age || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Gender</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.gender}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.gender}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{getTranslatedGender(person.gender || "")}</p>
                 </div>
               </div>
               {/* Right Column - Name, Relative name, Part No */}
               <div className="flex-1 min-w-0 space-y-2 sm:space-y-2.5">
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Name</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.name}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.name}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.name || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Relative name</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.relativeName}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.relativeName}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.relativeName || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Part No</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{parseInt(person.partNo).toString()}</p>
+                  <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.partNo}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{person.partNo && !isNaN(parseInt(person.partNo)) ? parseInt(person.partNo).toString() : "N/A"}</p>
                 </div>
               </div>
             </div>
@@ -112,19 +129,19 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
           {/* Location Information Section */}
           <div className="bg-slate-50 rounded-md p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 border border-slate-100">
             <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">Part Name</p>
-              <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.partName}</p>
+              <p className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-slate-600 mb-0.5 uppercase tracking-wide">{t.partName}</p>
+              <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900 break-words leading-snug">{person.partName || "N/A"}</p>
             </div>
           </div>
         </div>
 
         {/* Polling Station Section */}
-        <div className="bg-gradient-to-br from-peach-100 to-peach-200 border-2 border-carrot-200 rounded-lg p-2 sm:p-2.5 md:p-3 relative pr-10 sm:pr-12 md:pr-14 shadow-sm">
+        <div className="bg-gradient-to-br from-peach-100 to-peach-200 border-2 border-carrot-200 rounded-lg p-2 sm:p-2.5 md:p-3 relative polling-station-container-large shadow-sm">
           <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
             <div className="w-1 h-1 bg-carrot rounded-full"></div>
-            <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">Polling Station</p>
+            <p className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-900">{t.pollingStation}</p>
           </div>
-          <p className="text-[9px] sm:text-[10px] md:text-xs text-slate-800 leading-relaxed pr-2 sm:pr-3 break-words font-medium">{person.pollingStation}</p>
+          <p className="text-[9px] sm:text-[10px] md:text-xs text-slate-800 leading-relaxed polling-station-text break-words font-medium">{person.pollingStation || "N/A"}</p>
           
           {/* WhatsApp Icon */}
           <div className="absolute bottom-2 right-2 sm:bottom-2.5 sm:right-2.5 md:bottom-3 md:right-3">
@@ -150,16 +167,19 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
           src="/poll.png"
           alt="Logo"
           className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain drop-shadow-sm"
+          onError={(e) => {
+            (e.target as HTMLImageElement).classList.add("img-error");
+          }}
         />
         {/* Ward Number */}
-        <div className="flex-1 min-w-0 flex flex-col items-center justify-center h-10 sm:h-12 md:h-14 bg-[#E57E22] rounded-md">
-          <p className="text-[14px] sm:text-[14px] text-white mb-0.5 font-semibold uppercase tracking-wide text-center">Ward</p>
-          <p className="text-[14px] sm:text-[14px] md:text-[14px] font-bold text-white break-words text-center">{person.wardNumber}</p>
+        <div className="flex-1 min-w-0 flex flex-col items-center justify-center voter-card-header-height ward-bg rounded-md">
+          <p className="text-[14px] sm:text-[14px] text-white mb-0.5 font-semibold uppercase tracking-wide text-center">{t.ward}</p>
+          <p className="text-[14px] sm:text-[14px] md:text-[14px] font-bold text-white break-words text-center">{person.wardNumber || "N/A"}</p>
         </div>
         {/* EPIC Number */}
-        <div className="flex-1 min-w-0 flex flex-col items-center justify-center h-10 sm:h-12 md:h-14 bg-gradient-to-br from-peach-100 to-peach-200 rounded-md">
-          <p className="text-[14px] sm:text-[14px] text-black mb-0.5 font-semibold uppercase tracking-wide text-center">EPIC NO</p>
-          <p className="text-[12px] sm:text-[10px] md:text-[12px] font-bold text-black break-words text-center">{person.epicNo}</p>
+        <div className="flex-1 min-w-0 flex flex-col items-center justify-center voter-card-header-height bg-gradient-to-br from-peach-100 to-peach-200 rounded-md">
+          <p className="text-[14px] sm:text-[14px] text-black mb-0.5 font-semibold uppercase tracking-wide text-center">{t.epicNo}</p>
+          <p className="text-[12px] sm:text-[10px] md:text-[12px] font-bold text-black break-words text-center">{person.epicNo || "N/A"}</p>
         </div>
       </div>
 
@@ -171,35 +191,35 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
             {/* Left Column */}
             <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Serial No.</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.serialNo}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.serialNo}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.serialNo || "N/A"}</p>
               </div>
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Age</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.age}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.age}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.age || "N/A"}</p>
               </div>
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Gender</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.gender}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.gender}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{getTranslatedGender(person.gender || "")}</p>
               </div>
               <div className="min-w-0">
-            <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Part Name</p>
-            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.partName}</p>
+            <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.partName}</p>
+            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.partName || "N/A"}</p>
           </div>
             </div>
             {/* Right Column - Name, Relative name, Part No */}
             <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Name</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.name}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.name}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.name || "N/A"}</p>
               </div>
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Relative name</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.relativeName}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.relativeName}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900 break-words leading-snug">{person.relativeName || "N/A"}</p>
               </div>
               <div>
-                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">Part No</p>
-                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{parseInt(person.partNo).toString()}</p>
+                <p className="text-[8px] sm:text-[9px] text-slate-600 mb-0.5 font-semibold uppercase tracking-wide">{t.partNo}</p>
+                <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{person.partNo && !isNaN(parseInt(person.partNo)) ? parseInt(person.partNo).toString() : "N/A"}</p>
               </div>
             </div>
           </div>
@@ -207,13 +227,13 @@ export default function VoterCard({ person, isLarge = false }: VoterCardProps) {
       </div>
 
       {/* Polling Station Section */}
-      <div className="bg-gradient-to-br from-peach-100 to-peach-200 border-2 border-carrot-200 rounded-md p-2 sm:p-2.5 md:p-3 relative pr-8 sm:pr-10 md:pr-12 shadow-sm">
+      <div className="bg-gradient-to-br from-peach-100 to-peach-200 border-2 border-carrot-200 rounded-md p-2 sm:p-2.5 md:p-3 relative polling-station-container shadow-sm">
         <div className="flex items-center gap-1 mb-1.5 sm:mb-2">
           <div className="w-0.5 h-0.5 bg-carrot rounded-full"></div>
-          <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">Polling Station</p>
+          <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-900">{t.pollingStation}</p>
         </div>
-        <p className="text-[8px] sm:text-[9px] md:text-[10px] text-slate-800 leading-relaxed break-words pr-1.5 sm:pr-2 font-medium">
-          {person.pollingStation}
+        <p className="text-[8px] sm:text-[9px] md:text-[10px] text-slate-800 leading-relaxed break-words polling-station-text-small font-medium">
+          {person.pollingStation || "N/A"}
         </p>
         <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 md:bottom-2.5 md:right-2.5">
           <WhatsAppButton size="sm" />

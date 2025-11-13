@@ -15,6 +15,9 @@ export default function SearchBanner() {
           src="/baner.png"
           alt="Dashboard Visual"
           className="w-full h-auto object-fill max-h-[220px] sm:max-h-[300px] md:max-h-[400px] lg:max-h-[500px]"
+          onError={(e) => {
+            (e.target as HTMLImageElement).classList.add("img-error");
+          }}
         />
       </div>
     </motion.div>

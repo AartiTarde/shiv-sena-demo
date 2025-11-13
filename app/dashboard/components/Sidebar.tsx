@@ -49,6 +49,9 @@ export default function Sidebar({
               src="/logo.png" 
               alt="Logo" 
               className="w-full max-w-[200px] h-auto object-contain" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).classList.add("img-error");
+              }}
             /></Link>
           </div>
         </div>

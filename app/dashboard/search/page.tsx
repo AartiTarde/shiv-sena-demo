@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import SearchBanner from "./components/SearchBanner";
 import MobileHeader from "../components/MobileHeader";
 import Link from "next/link";
-import { FaIdCard } from "react-icons/fa";
+import { FaIdCard, FaCheckDouble } from "react-icons/fa";
 import { TbListDetails } from "react-icons/tb";
 import { VscDiffAdded } from "react-icons/vsc";
 import { MdDeleteSweep } from "react-icons/md";
@@ -42,6 +42,7 @@ const searchTypes: Array<{
   { id: "details", label: "Search by Details", path: "/dashboard/search/details", icon: TbListDetails },
   { id: "added", label: "Added After VS", path: "/dashboard/search/added", icon: VscDiffAdded },
   { id: "deleted", label: "Deleted After VS", path: "/dashboard/search/deleted", icon: MdDeleteSweep },
+  { id: "double", label: "Double Voters", path: "/dashboard/search/double", icon: FaCheckDouble },
 ];
 
 export default function SearchPage() {
@@ -68,7 +69,7 @@ export default function SearchPage() {
         </motion.h1>
         
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-4 md:gap-5 lg:gap-5 xl:gap-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"

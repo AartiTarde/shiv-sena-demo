@@ -23,16 +23,20 @@ export default function DashboardPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn");
-    if (loggedIn !== "true") {
-      router.push("/login");
-    } else {
-      setIsLoggedIn(true);
+    if (typeof window !== "undefined") {
+      const loggedIn = localStorage.getItem("isLoggedIn");
+      if (loggedIn !== "true") {
+        router.push("/login");
+      } else {
+        setIsLoggedIn(true);
+      }
     }
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("isLoggedIn");
+    }
     router.push("/login");
   };
 
@@ -61,10 +65,10 @@ export default function DashboardPage() {
     
     const selected = getSelectedMenu();
     if (selected === "dashboard") {
-      return <Overview />;
+      return <Overview onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />;
     }
     // For other menu items, show appropriate component
-    return <Overview />;
+    return <Overview onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />;
   };
 
   if (!isLoggedIn) {

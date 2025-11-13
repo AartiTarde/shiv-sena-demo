@@ -18,29 +18,50 @@ export default function PartNumberDropdown({
   onToggleOpen,
 }: PartNumberDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isOpenRef = useRef(isOpen);
+
+  // Keep ref in sync with prop
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onToggleOpen();
+        if (isOpenRef.current) {
+          onToggleOpen();
+        }
       }
     };
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, [isOpen, onToggleOpen]);
+
+  const handleToggle = (partNo: string) => {
+    onToggle(partNo);
+    // Close dropdown after selection
+    // Use setTimeout to defer close until after state update
+    setTimeout(() => {
+      if (isOpenRef.current) {
+        onToggleOpen();
+      }
+    }, 10);
+  };
 
   return (
     <div className="relative flex-1 sm:flex-initial" ref={dropdownRef}>
       <button
         type="button"
         onClick={onToggleOpen}
-        className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-2 border border-border-light rounded-lg bg-white text-slate-900 text-xs md:text-sm focus:ring-2 focus:ring-carrot focus:border-carrot outline-none flex items-center gap-1.5 sm:gap-2 sm:min-w-[160px] min-h-[38px] sm:min-h-[40px] md:min-h-[44px] overflow-hidden"
+        className="dropdown-btn input-height"
+        aria-label="Select Part Number"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
       >
         <span className="flex-1 min-w-0 text-left">
           {selectedPartNumbers.length === 0 ? (
@@ -50,7 +71,12 @@ export default function PartNumberDropdown({
           ) : (
             <span className="whitespace-nowrap block overflow-x-auto scrollbar-hide">
               {[...selectedPartNumbers]
-                .sort((a, b) => parseInt(a) - parseInt(b))
+                .sort((a, b) => {
+                  const numA = parseInt(a);
+                  const numB = parseInt(b);
+                  if (isNaN(numA) || isNaN(numB)) return 0;
+                  return numA - numB;
+                })
                 .join(", ")}
             </span>
           )}
@@ -66,14 +92,19 @@ export default function PartNumberDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 sm:right-auto mt-0.5 sm:mt-1 bg-white border border-border-light rounded-lg shadow-lg z-50 sm:w-full sm:min-w-[200px] max-h-[250px] sm:max-h-[300px] overflow-y-auto">
+        <div 
+          className="absolute top-full left-0 right-0 sm:right-auto mt-0.5 sm:mt-1 bg-white border border-border-light rounded-lg shadow-lg z-50 sm:w-full sm:min-w-[200px] dropdown-container overflow-y-auto"
+          role="listbox"
+          aria-label="Part Number Selection"
+        >
           <div className="p-1.5 sm:p-2">
-            <label className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 hover:bg-peach-50 cursor-pointer rounded min-h-[36px] sm:min-h-[40px] md:min-h-[44px]">
+            <label className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 hover:bg-peach-50 cursor-pointer rounded dropdown-item-height">
               <input
                 type="checkbox"
                 checked={selectedPartNumbers.length === partNumbers.length}
-                onChange={() => onToggle("all")}
+                onChange={() => handleToggle("all")}
                 className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-carrot focus:ring-carrot border-border-light rounded flex-shrink-0"
+                aria-label="Select All"
               />
               <span className="text-xs md:text-sm text-slate-900 font-medium">Select All</span>
             </label>
@@ -81,13 +112,14 @@ export default function PartNumberDropdown({
             {partNumbers.map((num) => (
               <label
                 key={num}
-                className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 hover:bg-peach-50 cursor-pointer rounded min-h-[36px] sm:min-h-[40px] md:min-h-[44px]"
+                className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 hover:bg-peach-50 cursor-pointer rounded dropdown-item-height"
               >
                 <input
                   type="checkbox"
                   checked={selectedPartNumbers.includes(num)}
-                  onChange={() => onToggle(num)}
+                  onChange={() => handleToggle(num)}
                   className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-carrot focus:ring-carrot border-border-light rounded flex-shrink-0"
+                  aria-label={`Select Part Number ${num}`}
                 />
                 <span className="text-xs md:text-sm text-slate-900">{num}</span>
               </label>
