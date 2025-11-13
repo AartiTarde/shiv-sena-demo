@@ -62,7 +62,7 @@ export default function EpicSearchPage() {
           relativeName: "RAMESH KUMAR",
           partNo: "001",
           partName: "Sample Part Name",
-          wardNumber: "Ward 10",
+          wardNumber: "10",
           pollingStation: "ANAND NAGAR UPPER PRIMARY MARATHI MUMBAI PUBLIC SCHOOL NO. 2, GROUND FLOOR, ROOM NO.10, V.N.PURAV MARG(SOUTH), CHEMBUR MUMBAI-71"
         });
       }
