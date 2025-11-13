@@ -154,7 +154,7 @@ export default function EpicSearchPage() {
 
         {displayResults.length === 0 ? (
           <div className="text-center py-4 sm:py-6 md:py-8">
-            <p className="text-xs sm:text-sm md:text-base text-slate-600">No voters found matching "{epicSearchQuery}"</p>
+            <p className="text-xs sm:text-sm md:text-base text-slate-600">No voters found matching &quot;{epicSearchQuery}&quot;</p>
           </div>
         ) : (
           <div>
