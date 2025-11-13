@@ -1,29 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { secureLogin, SecureAuth } from "../utils/auth";
+import { validateEmail, sanitizeInput, rateLimiter } from "../utils/security";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Demo login credentials
-  const DEMO_EMAIL = "demo@example.com";
-  const DEMO_PASSWORD = "demo123";
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (SecureAuth.isAuthenticated()) {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
-    if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("isLoggedIn", "true");
+    try {
+      // Rate limiting check
+      const clientId = typeof window !== "undefined" ? window.location.hostname : "default";
+      if (!rateLimiter.isAllowed(`login_${clientId}`)) {
+        setError("Too many login attempts. Please wait a minute and try again.");
+        setIsLoading(false);
+        return;
       }
-      router.push("/dashboard");
-    } else {
-      setError("Invalid credentials. Use demo@example.com / demo123");
+
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeInput(email);
+      const sanitizedPassword = sanitizeInput(password);
+
+      // Validate email format
+      if (!validateEmail(sanitizedEmail)) {
+        setError("Please enter a valid email address.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate password length
+      if (sanitizedPassword.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Attempt secure login
+      const loginSuccess = secureLogin(sanitizedEmail, sanitizedPassword);
+
+      if (loginSuccess) {
+        router.push("/dashboard");
+      } else {
+        setError("Invalid credentials. Please check your email and password.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,10 +115,15 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    const sanitized = sanitizeInput(e.target.value);
+                    setEmail(sanitized);
+                  }}
                   className="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-carrot focus:border-carrot outline-none transition bg-white text-slate-900 placeholder:text-slate-500"
                   placeholder="Enter your email"
                   required
+                  autoComplete="email"
+                  maxLength={254}
                 />
               </div>
 
@@ -87,10 +132,16 @@ export default function LoginPage() {
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    const sanitized = sanitizeInput(e.target.value);
+                    setPassword(sanitized);
+                  }}
                   className="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-carrot focus:border-carrot outline-none transition bg-white text-slate-900 placeholder:text-slate-500"
                   placeholder="Enter your password"
                   required
+                  autoComplete="current-password"
+                  minLength={6}
+                  maxLength={128}
                 />
               </div>
 
@@ -102,21 +153,12 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full bg-carrot hover:bg-burnt text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                disabled={isLoading}
+                className="w-full bg-carrot hover:bg-burnt text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {isLoading ? "Signing In..." : "Sign In"}
               </button>
-              <div className="bg-peach-200 border border-border-light p-4 rounded-lg">
-                <p className="text-sm text-slate-900 font-medium mb-1">
-                  Demo Credentials:
-                </p>
-                <p className="text-xs text-slate-500">
-                  Email: <span className="font-mono text-slate-900">{DEMO_EMAIL}</span>
-                </p>
-                <p className="text-xs text-slate-500">
-                  Password: <span className="font-mono text-slate-900">{DEMO_PASSWORD}</span>
-                </p>
-              </div>
+              {/* Removed demo credentials display for security */}
             </form>
           </div>
         </div>

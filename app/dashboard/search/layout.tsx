@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { LanguageProvider } from "../../contexts/LanguageContext";
 import { SidebarProvider } from "../../contexts/SidebarContext";
+import { SecureAuth } from "../../utils/auth";
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard" },
@@ -21,20 +22,19 @@ export default function SearchLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const loggedIn = localStorage.getItem("isLoggedIn");
-      if (loggedIn !== "true") {
-        router.push("/login");
-      } else {
-        setIsLoggedIn(true);
-      }
+    // Initialize session monitoring
+    SecureAuth.initSessionMonitoring();
+
+    // Check authentication
+    if (!SecureAuth.isAuthenticated()) {
+      router.push("/login");
+    } else {
+      setIsLoggedIn(true);
     }
   }, [router]);
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("isLoggedIn");
-    }
+    SecureAuth.clearAuth();
     router.push("/login");
   };
 

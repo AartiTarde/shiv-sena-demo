@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SecureAuth } from "./utils/auth";
 
 export default function Home() {
   const router = useRouter();
@@ -9,14 +10,11 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    // Check if user is logged in (simple check)
-    if (typeof window !== "undefined") {
-      const isLoggedIn = localStorage.getItem("isLoggedIn");
-      if (isLoggedIn === "true") {
-        router.push("/dashboard");
-      } else {
-        router.push("/login");
-      }
+    // Check if user is logged in using secure auth
+    if (SecureAuth.isAuthenticated()) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
     }
   }, [router]);
 

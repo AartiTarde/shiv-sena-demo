@@ -8,6 +8,7 @@ import VoterCard from "../components/VoterCard";
 import Pagination from "../components/Pagination";
 import { VoterData, generateResults, fullDemoDatabase } from "../utils/data";
 import { ITEMS_PER_PAGE } from "../utils/constants";
+import { sanitizeInput, validateEpicNumber, rateLimiter } from "../../../utils/security";
 
 export default function EpicSearchPage() {
   const [epicSearchQuery, setEpicSearchQuery] = useState("");
@@ -38,8 +39,25 @@ export default function EpicSearchPage() {
   }, [epicSearchQuery]);
 
   const handleEpicSearch = () => {
+    // Rate limiting check
+    const clientId = typeof window !== "undefined" ? window.location.hostname : "default";
+    if (!rateLimiter.isAllowed(`epic_search_${clientId}`)) {
+      alert("Too many search requests. Please wait a minute and try again.");
+      return;
+    }
+
     if (epicSearchQuery.trim()) {
-      const query = epicSearchQuery.trim().toUpperCase();
+      // Sanitize and validate input
+      const sanitized = sanitizeInput(epicSearchQuery.trim().toUpperCase());
+      
+      // Validate EPIC format (optional - can be lenient for partial searches)
+      // For exact searches, validate format
+      if (sanitized.length === 10 && !validateEpicNumber(sanitized)) {
+        alert("Invalid EPIC number format. Please enter a valid EPIC number.");
+        return;
+      }
+
+      const query = sanitized;
       const found = fullDemoDatabase.find(
         (voter) => voter.epicNo.toUpperCase() === query
       );
@@ -51,10 +69,10 @@ export default function EpicSearchPage() {
         // If multiple matches found, show list (no single result)
         setSearchResult(null);
       } else {
-        // If not found, show a mock result with the searched EPIC
+        // If not found, show a mock result with the searched EPIC (sanitized)
         setSearchResult({
           id: 999,
-          epicNo: epicSearchQuery.trim().toUpperCase(),
+          epicNo: query,
           serialNo: "999",
           name: "RAJESH KUMAR",
           age: "35",
@@ -136,12 +154,17 @@ export default function EpicSearchPage() {
               <input
                 type="text"
                 value={epicSearchQuery}
-                onChange={(e) => setEpicSearchQuery(e.target.value.slice(0, 20).toUpperCase())}
+                onChange={(e) => {
+                  const sanitized = sanitizeInput(e.target.value.slice(0, 20).toUpperCase());
+                  setEpicSearchQuery(sanitized);
+                }}
                 onKeyDown={(e) => e.key === "Enter" && handleEpicSearch()}
                 placeholder="Enter Your EPIC Number"
                 maxLength={20}
                 className="w-full border border-border-light rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-carrot focus:border-carrot outline-none transition-colors px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-2.5 input-with-icon text-xs sm:text-sm md:text-base input-height md:min-h-auto"
                 aria-label="Enter Your EPIC Number"
+                pattern="[A-Z0-9]{1,20}"
+                title="EPIC number should contain only letters and numbers"
               />
               <svg
                 className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-500 pointer-events-none"

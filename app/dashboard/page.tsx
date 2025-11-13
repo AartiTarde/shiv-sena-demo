@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Overview from "./components/Overview";
+import { SecureAuth } from "../utils/auth";
 
 type MenuItem = {
   id: string;
@@ -23,20 +24,19 @@ export default function DashboardPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const loggedIn = localStorage.getItem("isLoggedIn");
-      if (loggedIn !== "true") {
-        router.push("/login");
-      } else {
-        setIsLoggedIn(true);
-      }
+    // Initialize session monitoring
+    SecureAuth.initSessionMonitoring();
+
+    // Check authentication
+    if (!SecureAuth.isAuthenticated()) {
+      router.push("/login");
+    } else {
+      setIsLoggedIn(true);
     }
   }, [router]);
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("isLoggedIn");
-    }
+    SecureAuth.clearAuth();
     router.push("/login");
   };
 
