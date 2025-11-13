@@ -66,4 +66,19 @@ npm start
 - TypeScript
 - Tailwind CSS
 - React 18
+- Framer Motion
+
+## Configuration
+
+### Disabling Next.js Telemetry
+
+Next.js collects anonymous telemetry data by default. To disable it:
+
+**Locally:**
+```bash
+npx next telemetry disable
+```
+
+**On Vercel:**
+Set the environment variable `NEXT_TELEMETRY_DISABLED=1` in your Vercel project settings.
 
