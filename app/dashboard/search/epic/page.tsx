@@ -7,127 +7,97 @@ import MobileHeader from "../../components/MobileHeader";
 import VoterCard from "../components/VoterCard";
 import Pagination from "../components/Pagination";
 import { VoterData, generateResults, fullDemoDatabase } from "../utils/data";
-import { ITEMS_PER_PAGE } from "../utils/constants";
 import { sanitizeInput, validateEpicNumber, rateLimiter } from "../../../utils/security";
+
+const ITEMS_PER_PAGE = 9;
 
 export default function EpicSearchPage() {
   const [epicSearchQuery, setEpicSearchQuery] = useState("");
-  const [searchResult, setSearchResult] = useState<VoterData | null>(null);
   const [defaultVoters] = useState<VoterData[]>(generateResults(18)); // Show 18 default voters
+  const [displayedVoters, setDisplayedVoters] = useState<VoterData[]>(defaultVoters);
+  const [searchResult, setSearchResult] = useState<VoterData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Filter default voters based on search query (for live filtering)
-  const filteredDefaultVoters = useMemo(() => {
-    if (!epicSearchQuery.trim()) {
-      return defaultVoters;
-    }
-    const query = epicSearchQuery.trim().toUpperCase();
-    return defaultVoters.filter((voter) =>
-      voter.epicNo.toUpperCase().includes(query)
-    );
-  }, [epicSearchQuery, defaultVoters]);
-
-  // Search in full demo database
-  const searchResults = useMemo(() => {
-    if (!epicSearchQuery.trim()) {
-      return [];
-    }
-    const query = epicSearchQuery.trim().toUpperCase();
-    return fullDemoDatabase.filter((voter) =>
-      voter.epicNo.toUpperCase().includes(query)
-    );
-  }, [epicSearchQuery]);
+  const [isSearched, setIsSearched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEpicSearch = () => {
-    // Rate limiting check
-    const clientId = typeof window !== "undefined" ? window.location.hostname : "default";
-    if (!rateLimiter.isAllowed(`epic_search_${clientId}`)) {
-      alert("Too many search requests. Please wait a minute and try again.");
+    const trimmedQuery = epicSearchQuery.trim();
+
+    if (!trimmedQuery) {
+      setDisplayedVoters(defaultVoters);
+      setSearchResult(null);
+      setIsSearched(false);
+      setCurrentPage(1);
+      setErrorMessage("");
       return;
     }
 
-    if (epicSearchQuery.trim()) {
-      // Sanitize and validate input
-      const sanitized = sanitizeInput(epicSearchQuery.trim().toUpperCase());
-      
-      // Validate EPIC format (optional - can be lenient for partial searches)
-      // For exact searches, validate format
-      if (sanitized.length === 10 && !validateEpicNumber(sanitized)) {
-        alert("Invalid EPIC number format. Please enter a valid EPIC number.");
-        return;
-      }
+    const clientId = typeof window !== "undefined" ? window.location.hostname : "default";
+    if (!rateLimiter.isAllowed(`epic_search_${clientId}`)) {
+      setErrorMessage("Too many search requests. Please wait a minute and try again.");
+      return;
+    }
 
-      const query = sanitized;
-      const found = fullDemoDatabase.find(
-        (voter) => voter.epicNo.toUpperCase() === query
+    setCurrentPage(1);
+    setIsSearched(true);
+    setErrorMessage("");
+
+    const sanitized = sanitizeInput(trimmedQuery.toUpperCase());
+
+    if (sanitized.length === 10 && !validateEpicNumber(sanitized)) {
+      setErrorMessage("Invalid EPIC number format. Please enter a valid EPIC number.");
+      setDisplayedVoters([]);
+      setSearchResult(null);
+      return;
+    }
+
+    const query = sanitized;
+    const found = fullDemoDatabase.find(
+      (voter) => voter.epicNo.toUpperCase() === query
+    );
+    
+    if (found) {
+      setSearchResult(found);
+      setDisplayedVoters([found]);
+    } else {
+      const searchResults = fullDemoDatabase.filter((voter) =>
+        voter.epicNo.toUpperCase().includes(query)
       );
-      
-      if (found) {
-        // If exact match found, show single result
-        setSearchResult(found);
-      } else if (searchResults.length > 0) {
-        // If multiple matches found, show list (no single result)
+      if (searchResults.length > 0) {
+        setDisplayedVoters(searchResults);
         setSearchResult(null);
       } else {
-        // If not found, show a mock result with the searched EPIC (sanitized)
-        setSearchResult({
-          id: 999,
-          epicNo: query,
-          serialNo: "999",
-          name: "RAJESH KUMAR",
-          age: "35",
-          gender: "Male",
-          relativeName: "RAMESH KUMAR",
-          partNo: "001",
-          partName: "Sample Part Name",
-          wardNumber: "10",
-          pollingStation: "ANAND NAGAR UPPER PRIMARY MARATHI MUMBAI PUBLIC SCHOOL NO. 2, GROUND FLOOR, ROOM NO.10, V.N.PURAV MARG(SOUTH), CHEMBUR MUMBAI-71"
-        });
+        setDisplayedVoters([]);
+        setSearchResult(null);
       }
-      setCurrentPage(1);
-    } else {
-      // Clear search result if query is empty
-      setSearchResult(null);
-      setCurrentPage(1);
     }
   };
 
-  // Determine which results to display
-  const displayResults = useMemo(() => {
-    if (searchResult) {
-      // Single search result (exact match or mock)
-      return [searchResult];
-    } else if (epicSearchQuery.trim() && searchResults.length > 0) {
-      // Multiple search results
-      return searchResults;
-    } else {
-      // Default voters (filtered if query exists)
-      return filteredDefaultVoters;
-    }
-  }, [searchResult, epicSearchQuery, searchResults, filteredDefaultVoters]);
-
-  // Reset to first page when search query changes
+  // Reset to default when search query is cleared
   useEffect(() => {
-    setCurrentPage(1);
+    if (!epicSearchQuery.trim()) {
+      setErrorMessage("");
+      handleEpicSearch();
+    }
   }, [epicSearchQuery]);
 
   // Pagination calculations
-  const totalPages = displayResults.length > 0 ? Math.max(1, Math.ceil(displayResults.length / ITEMS_PER_PAGE)) : 1;
+  const totalPages = displayedVoters.length > 0 ? Math.max(1, Math.ceil(displayedVoters.length / ITEMS_PER_PAGE)) : 1;
   
   // Ensure current page is within valid bounds
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
+      setCurrentPage(totalPages);
     }
   }, [totalPages, currentPage]);
 
   const safeCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
   const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentResults = displayResults.slice(startIndex, endIndex);
+  const currentResults = displayedVoters.slice(startIndex, endIndex);
 
   return (
-    <div className="bg-peach-50 w-full overflow-x-hidden page-container">
+    <div className="bg-peach-50 w-full overflow-x-hidden">
       <div className="mobile-fixed-header">
         <MobileHeader />
         <SearchNav />
@@ -157,6 +127,7 @@ export default function EpicSearchPage() {
                 onChange={(e) => {
                   const sanitized = sanitizeInput(e.target.value.slice(0, 20).toUpperCase());
                   setEpicSearchQuery(sanitized);
+                  if (errorMessage) setErrorMessage(""); // Clear error on new input
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleEpicSearch()}
                 placeholder="Enter Your EPIC Number"
@@ -187,59 +158,60 @@ export default function EpicSearchPage() {
               SEARCH
             </button>
           </div>
+          {errorMessage && (
+            <p className="text-red-600 text-xs sm:text-sm mt-2">{errorMessage}</p>
+          )}
         </motion.div>
 
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-          {displayResults.length === 0 ? (
+          {currentResults.length === 0 && isSearched ? (
             <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
               <p className="text-xs sm:text-sm md:text-base text-slate-600">No voters found matching &quot;{epicSearchQuery}&quot;</p>
             </div>
-          ) : searchResult && displayResults.length === 1 ? (
+          ) : searchResult && currentResults.length === 1 ? (
             <div className="flex-1 overflow-y-auto px-2 sm:px-3 md:px-6 py-4 sm:py-6 md:py-8">
               <div className="max-w-4xl mx-auto">
                 <VoterCard person={searchResult} isLarge={true} />
               </div>
             </div>
           ) : (
-            <>
+            <div className="flex-1 min-h-0 flex flex-col">
               <div className="px-2 sm:px-3 md:px-6 pt-2 pb-2 sm:pb-3 md:pb-4 flex-shrink-0">
                 <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 mb-1 sm:mb-2">
-                  {epicSearchQuery.trim() && searchResult ? "Search Result" : epicSearchQuery.trim() ? `Search Results (${displayResults.length})` : "Recent Voters"}
+                  {isSearched ? `Search Results (${displayedVoters.length})` : "Recent Voters"}
                 </h2>
                 {!searchResult && (
                   <p className="text-xs sm:text-sm md:text-base text-slate-600">
-                    Showing <span className="font-bold text-slate-900">{displayResults.length}</span> result{displayResults.length !== 1 ? "s" : ""}
+                    Showing <span className="font-bold text-slate-900">{displayedVoters.length}</span> result{displayedVoters.length !== 1 ? "s" : ""}
                   </p>
                 )}
               </div>
-              <div className="flex-1 min-h-0 scrollable-container px-2 sm:px-3 md:px-6 scrollbar-thin">
-                <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3 xl:gap-4 pb-2 sm:pb-3 md:pb-4">
+              <div className="flex-1 min-h-0 scrollable-container px-2 sm:px-3 md:px-6 scrollbar-thin pb-2 sm:pb-3 md:pb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                   {currentResults.map((person) => (
                     <div key={person.id} className="w-full">
-                      <VoterCard person={person} />
+                      <VoterCard 
+                        person={person} 
+                        className="bg-white border border-slate-200 rounded-lg p-2 sm:p-2.5 md:p-3 shadow-md hover:shadow-xl transition-all duration-300 relative max-w-full overflow-hidden group h-full" 
+                      />
                     </div>
                   ))}
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
-        {displayResults.length > 0 && (!searchResult || displayResults.length > 1) && (
-          <div className="mobile-fixed-footer">
-            <div className="pagination-container">
-              <div className="px-2 sm:px-3 md:px-6">
-                <Pagination
-                  currentPage={safeCurrentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            </div>
+        {currentResults.length > 0 && (!searchResult || displayedVoters.length > 1) && (
+          <div className="pagination-container flex-shrink-0">
+            <Pagination
+              currentPage={safeCurrentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         )}
       </div>
     </div>
   );
 }
-

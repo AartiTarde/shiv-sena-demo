@@ -44,13 +44,6 @@ export default function PartNumberDropdown({
 
   const handleToggle = (partNo: string) => {
     onToggle(partNo);
-    // Close dropdown after selection
-    // Use setTimeout to defer close until after state update
-    setTimeout(() => {
-      if (isOpenRef.current) {
-        onToggleOpen();
-      }
-    }, 10);
   };
 
   return (

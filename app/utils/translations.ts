@@ -9,6 +9,7 @@ export interface Translations {
   doubleVoters: string;
   
   // Voter Card Labels
+  Assembly: string;
   ward: string;
   epicNo: string;
   serialNo: string;
@@ -46,6 +47,7 @@ const translations: Record<Language, Translations> = {
     addedAfterVS: "Added After VS",
     deletedAfterVS: "Deleted After VS",
     doubleVoters: "Double Voters",
+    Assembly: "Assembly",
     ward: "Ward",
     epicNo: "EPIC NO",
     serialNo: "Serial No.",
@@ -75,6 +77,7 @@ const translations: Record<Language, Translations> = {
     addedAfterVS: "VS नंतर जोडले",
     deletedAfterVS: "VS नंतर हटवले",
     doubleVoters: "दुहेरी मतदार",
+    Assembly: "विधानसभा",
     ward: "वॉर्ड",
     epicNo: "EPIC क्रमांक",
     serialNo: "अनुक्रमांक",
@@ -104,6 +107,7 @@ const translations: Record<Language, Translations> = {
     addedAfterVS: "VS के बाद जोड़ा गया",
     deletedAfterVS: "VS के बाद हटाया गया",
     doubleVoters: "दोहरे मतदाता",
+    Assembly: "विधानसभा",
     ward: "वार्ड",
     epicNo: "EPIC संख्या",
     serialNo: "क्रम संख्या",

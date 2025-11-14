@@ -158,28 +158,21 @@ export default function AddedSearchPage() {
                 </p>
               </div>
               <div className="flex-1 min-h-0 scrollable-container px-2 sm:px-3 md:px-6 scrollbar-thin">
-                <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3 xl:gap-4 pb-2 sm:pb-3 md:pb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                   {addedCurrentResults.map((person) => (
                     <div key={person.id} className="w-full">
                       <VoterCard person={person} />
                     </div>
                   ))}
                 </div>
+                <Pagination
+                  currentPage={safeCurrentPage}
+                  totalPages={totalPages}
+                  onPageChange={setAddedCurrentPage}
+                />
               </div>
             </>
           )}
-        </div>
-
-        <div className="mobile-fixed-footer">
-          <div className="pagination-container">
-            <div className="px-2 sm:px-3 md:px-6">
-              <Pagination
-                currentPage={safeCurrentPage}
-                totalPages={totalPages}
-                onPageChange={setAddedCurrentPage}
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>

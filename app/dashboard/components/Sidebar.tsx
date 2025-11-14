@@ -30,7 +30,7 @@ export default function Sidebar({
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
           onClick={onMobileMenuToggle}
         />
       )}
@@ -38,7 +38,7 @@ export default function Sidebar({
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-screen w-64 max-w-[85vw] bg-white shadow-lg flex flex-col border-r border-border-light transform transition-transform duration-300 ease-in-out z-40 ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0"
         }`}
       >
         {/* Branding Section */}

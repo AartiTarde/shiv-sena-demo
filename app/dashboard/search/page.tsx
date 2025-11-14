@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import SearchBanner from "./components/SearchBanner";
 import MobileHeader from "../components/MobileHeader";
+import SearchNav from "./components/SearchNav";
 import Link from "next/link";
 import { FaIdCard, FaCheckDouble } from "react-icons/fa";
 import { TbListDetails } from "react-icons/tb";
@@ -49,53 +49,57 @@ export default function SearchPage() {
   const router = useRouter();
 
   return (
-    <div className="bg-peach-50 min-h-full w-full overflow-x-hidden overflow-y-auto">
-      <MobileHeader />
-     
+    <div className="bg-peach-50 w-full overflow-x-hidden page-container">
+      <div className="mobile-fixed-header">
+        <MobileHeader />
+        <SearchNav />
+      </div>
 
-      <motion.div 
-        className="bg-peach-50 p-4 md:p-6 w-full"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <motion.h1 
-          className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 md:mb-6"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          Search Options
-        </motion.h1>
-        
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-4 md:gap-5 lg:gap-5 xl:gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          className="bg-peach-50 p-4 md:p-6 w-full flex-1 overflow-y-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          {searchTypes.map((type, index) => (
-            <motion.div key={type.id} variants={itemVariants}>
-              <Link
-                href={type.path}
-                className="bg-white border-2 border-border-light rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-200 hover:border-carrot group block"
-              >
-                <motion.div 
-                  className="flex flex-col items-center text-center"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+          <motion.h1 
+            className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 md:mb-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            Search Options
+          </motion.h1>
+          
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4 md:gap-5 lg:gap-5 xl:gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {searchTypes.map((type, index) => (
+              <motion.div key={type.id} variants={itemVariants}>
+                <Link
+                  href={type.path}
+                  className="bg-white border-2 border-border-light rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-200 hover:border-carrot group block"
                 >
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-carrot rounded-full flex items-center justify-center mb-4 group-hover:bg-burnt transition-colors">
-                    <type.icon {...({ className: "w-8 h-8 md:w-10 md:h-10 text-white" } as any)} />
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">{type.label}</h3>
-                  <p className="text-sm text-slate-600">Click to search</p>
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
+                  <motion.div 
+                    className="flex flex-col items-center text-center"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-carrot rounded-full flex items-center justify-center mb-4 group-hover:bg-burnt transition-colors">
+                      <type.icon {...({ className: "w-8 h-8 md:w-10 md:h-10 text-white" } as any)} />
+                    </div>
+                    <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">{type.label}</h3>
+                    <p className="text-sm text-slate-600">Click to search</p>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }

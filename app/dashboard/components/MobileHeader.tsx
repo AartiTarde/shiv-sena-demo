@@ -12,7 +12,7 @@ export default function MobileHeader({ onMobileMenuToggle }: MobileHeaderProps) 
   const handleToggle = onMobileMenuToggle || sidebarContext?.onMobileMenuToggle || (() => {});
   return (
     <motion.div 
-      className="md:hidden w-full bg-white border-b border-border-light shadow-sm mobile-fixed-header"
+      className="xl:hidden w-full bg-white border-b border-border-light shadow-sm mobile-fixed-header"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}

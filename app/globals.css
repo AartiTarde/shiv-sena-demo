@@ -22,10 +22,16 @@
   }
 }
 
+html {
+  font-size: clamp(15px, 14px + 0.4vw, 18px);
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem);
+  line-height: 1.6;
 }
 
 @layer utilities {
@@ -177,17 +183,7 @@ body {
     width: 100%;
   }
   
-  /* Mobile: Fixed pagination footer - stays at bottom */
-  .mobile-fixed-footer {
-    @apply bg-peach-50 border-t border-border-light flex-shrink-0 z-20;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-    width: 100%;
-  }
-  
-  /* Pagination Container */
-  .pagination-container {
-    @apply py-2 sm:py-3 md:py-4;
-  }
+
   
   /* Content Area - Scrollable section */
   .content-area {

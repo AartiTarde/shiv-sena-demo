@@ -88,7 +88,7 @@ export default function DashboardPage() {
       />
 
       {/* Main Content - Changes based on selected menu */}
-        <main className="flex-1 w-full md:ml-64 min-h-screen overflow-x-hidden">
+        <main className="flex-1 w-full xl:ml-64 min-h-screen overflow-x-hidden">
         {renderContent()}
       </main>
     </div>

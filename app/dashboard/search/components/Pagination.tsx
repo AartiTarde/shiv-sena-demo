@@ -8,11 +8,11 @@ type PaginationProps = {
 
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   // Edge case: invalid totalPages or currentPage
-  if (!totalPages || totalPages <= 1 || !currentPage || currentPage < 1) {
+  if (!totalPages || !currentPage || currentPage < 1) {
     return null;
   }
 
-  // Ensure currentPage is within valid range
+  // Ensure currentPage is within a valid range
   const safeCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
 
   // Limit page buttons displayed for better UX (show max 7 pages)
@@ -26,10 +26,16 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
   const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      onPageChange(page);
+    }
+  };
+
   return (
-    <nav className="flex flex-wrap items-center justify-center gap-2 mt-4 md:mt-6" aria-label="Pagination">
+    <nav className="flex flex-wrap items-center justify-center gap-2 mt-4 md:mt-6 mb-4" aria-label="Pagination">
       <button
-        onClick={() => onPageChange(Math.max(1, safeCurrentPage - 1))}
+        onClick={() => handlePageChange(safeCurrentPage - 1)}
         disabled={safeCurrentPage === 1}
         className="pagination-nav-btn pagination-btn"
         aria-label="Go to previous page"
@@ -40,7 +46,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
       {startPage > 1 && (
         <>
           <button
-            onClick={() => onPageChange(1)}
+            onClick={() => handlePageChange(1)}
             className="pagination-btn-base pagination-btn bg-white text-slate-900 border border-border-light hover:bg-peach-50"
             aria-label="Go to page 1"
           >
@@ -56,7 +62,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         {pages.map((page) => (
           <button
             key={page}
-            onClick={() => onPageChange(page)}
+            onClick={() => handlePageChange(page)}
             className={`pagination-btn-base pagination-btn ${
               safeCurrentPage === page
                 ? "bg-carrot text-white"
@@ -76,7 +82,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
             <span className="px-2 text-slate-500 text-xs md:text-sm">...</span>
           )}
           <button
-            onClick={() => onPageChange(totalPages)}
+            onClick={() => handlePageChange(totalPages)}
             className="pagination-btn-base pagination-btn bg-white text-slate-900 border border-border-light hover:bg-peach-50"
             aria-label={`Go to page ${totalPages}`}
           >
@@ -86,7 +92,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
       )}
       
       <button
-        onClick={() => onPageChange(Math.min(totalPages, safeCurrentPage + 1))}
+        onClick={() => handlePageChange(safeCurrentPage + 1)}
         disabled={safeCurrentPage === totalPages}
         className="pagination-nav-btn pagination-btn"
         aria-label="Go to next page"
@@ -96,4 +102,3 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
     </nav>
   );
 }
-

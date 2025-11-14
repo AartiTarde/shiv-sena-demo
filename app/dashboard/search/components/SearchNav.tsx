@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
+import { useLoader } from "../../../contexts/LoaderContext";
 
 const searchTypes = [
   { id: "epic", labelKey: "searchByEpic", path: "/dashboard/search/epic" },
@@ -19,6 +20,7 @@ export default function SearchNav() {
   const pathname = usePathname();
   const { language } = useLanguage();
   const translations = getTranslations(language);
+  const { triggerLoader } = useLoader();
 
   const getActiveId = () => {
     if (pathname?.includes("/epic")) return "epic";
@@ -33,13 +35,13 @@ export default function SearchNav() {
 
   return (
     <motion.div 
-      className="bg-peach-50 p-2 sm:p-2.5 md:p-4 border-b border-border-light mobile-fixed-header md:static"
+      className="bg-peach-50 p-2 sm:p-2.5 md:p-4 border-b border-border-light mobile-fixed-header xl:static"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <div className="flex flex-nowrap items-center justify-between gap-2 sm:gap-3">
-        <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 md:gap-3 overflow-x-auto md:scrollbar-hide flex-1 scrollbar-thin scrollbar-thumb-carrot scrollbar-track-peach-100 pb-1">
+        <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 md:gap-3 overflow-x-auto md:scrollbar-hide flex-1 scrollbar-thin scrollbar-thumb-carrot scrollbar-track-peach-100 pb-2">
           {searchTypes.map((type, index) => (
             <motion.div
               key={type.id}
@@ -54,6 +56,7 @@ export default function SearchNav() {
                     ? "bg-carrot text-white"
                     : "bg-white text-slate-900 border border-border-light hover:bg-peach-50"
                 }`}
+                onClick={() => triggerLoader(900)}
               >
                 {translations[type.labelKey as keyof typeof translations]}
               </Link>

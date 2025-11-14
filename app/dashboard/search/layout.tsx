@@ -66,7 +66,7 @@ export default function SearchLayout({
             isMobileMenuOpen={isMobileMenuOpen}
             onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           />
-          <main className="flex-1 w-full md:ml-64 overflow-x-hidden h-screen flex flex-col">
+          <main className="flex-1 w-full xl:ml-64 overflow-x-hidden h-screen flex flex-col">
             {children}
           </main>
         </div>
