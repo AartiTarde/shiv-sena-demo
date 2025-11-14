@@ -10,12 +10,13 @@ import PartNumberDropdown from "../components/PartNumberDropdown";
 import { generateResults, VoterData } from "../utils/data";
 import { togglePartNumber as togglePartNumberUtil } from "../utils/partNumberUtils";
 import { ITEMS_PER_PAGE, PART_NUMBERS } from "../utils/constants";
-import { useLanguage } from "../../../contexts/LanguageContext";
+// import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
 
 export default function AddedSearchPage() {
-  const { language } = useLanguage();
-  const t = getTranslations(language);
+  // const { language } = useLanguage();
+  // const t = getTranslations(language);
+  const t = getTranslations("en");
   const [addedAssembly, setAddedAssembly] = useState("");
   const [addedPartNumbers, setAddedPartNumbers] = useState<string[]>([]);
   const [defaultResults] = useState<VoterData[]>(generateResults(18));

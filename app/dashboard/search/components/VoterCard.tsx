@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { VoterData } from "../utils/data";
-import { useLanguage } from "../../../contexts/LanguageContext";
+// import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
 
 type VoterCardProps = {
@@ -43,8 +43,9 @@ const WhatsAppButton = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
 };
 
 export default function VoterCard({ person, isLarge = false, className = "" }: VoterCardProps) {
-  const { language } = useLanguage();
-  const t = getTranslations(language);
+  // const { language } = useLanguage();
+  // const t = getTranslations(language);
+  const t = getTranslations("en");
 
   // Translate gender value
   const getTranslatedGender = (gender: string) => {

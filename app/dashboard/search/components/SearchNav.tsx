@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLanguage } from "../../../contexts/LanguageContext";
+// import { useLanguage } from "../../../contexts/LanguageContext";
 import { getTranslations } from "../../../utils/translations";
 import { useLoader } from "../../../contexts/LoaderContext";
 
@@ -18,8 +18,9 @@ const searchTypes = [
 
 export default function SearchNav() {
   const pathname = usePathname();
-  const { language } = useLanguage();
-  const translations = getTranslations(language);
+  // const { language } = useLanguage();
+  // const translations = getTranslations(language);
+  const translations = getTranslations("en");
   const { triggerLoader } = useLoader();
 
   const getActiveId = () => {
