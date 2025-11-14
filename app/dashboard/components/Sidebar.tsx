@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Fragment } from "react";
 
 type MenuItem = {
   id: string;
@@ -80,36 +81,38 @@ export default function Sidebar({
               };
 
               return (
-                <li key={item.id}>
-                  <button
-                    onClick={() => onMenuClick(item.id)}
-                    className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 text-left ${
-                      selectedMenu === item.id
-                        ? "bg-peach-200 text-slate-900"
-                        : "text-slate-900 hover:bg-peach-50"
-                    }`}
-                  >
-                    <span className="text-slate-900 flex-shrink-0">{getIcon(item.icon)}</span>
-                    <span className="font-bold text-xs md:text-sm uppercase tracking-wide truncate">{item.label}</span>
-                  </button>
-                </li>
+                <Fragment key={item.id}>
+                  <li key={item.id}>
+                    <button
+                      onClick={() => onMenuClick(item.id)}
+                      className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 text-left ${
+                        selectedMenu === item.id
+                          ? "bg-peach-200 text-slate-900"
+                          : "text-slate-900 hover:bg-peach-50"
+                      }`}
+                    >
+                      <span className="text-slate-900 flex-shrink-0">{getIcon(item.icon)}</span>
+                      <span className="font-bold text-xs md:text-sm uppercase tracking-wide truncate">{item.label}</span>
+                    </button>
+                  </li>
+                  {item.id === "search" && (
+                    <li key="logout" className="pt-1">
+                      <button
+                        onClick={onLogout}
+                        className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 text-left text-slate-900 hover:bg-red-50 hover:text-red-600 group"
+                      >
+                        <svg className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 group-hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span className="font-bold text-xs md:text-sm uppercase tracking-wide truncate">Logout</span>
+                      </button>
+                    </li>
+                  )}
+                </Fragment>
               );
             })}
           </ul>
         </nav>
-
-        {/* Logout Button */}
-        <div className="p-3 md:p-4 border-t border-border-light">
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 text-left text-slate-900 hover:bg-red-50 hover:text-red-600 group"
-          >
-            <svg className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 group-hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span className="font-bold text-xs md:text-sm uppercase tracking-wide truncate">Logout</span>
-          </button>
-        </div>
       </aside>
     </>
   );

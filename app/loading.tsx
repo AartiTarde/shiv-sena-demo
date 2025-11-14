@@ -44,7 +44,7 @@ export default function Loading() {
             animate="animate"
           />
           <motion.img
-            src="/logo.png"
+            src="/loader.png"
             alt="Party emblem"
             className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
             initial={{ scale: 0.85, opacity: 0.6 }}
